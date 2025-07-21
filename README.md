@@ -170,4 +170,203 @@ resource "docker_container" "mysql" {
 ### Задание 3*
 1. Установите [opentofu](https://opentofu.org/)(fork terraform с лицензией Mozilla Public License, version 2.0) любой версии
 2. Попробуйте выполнить тот же код с помощью ```tofu apply```, а не terraform apply.
+
+Готово:
+```
+rikolleti@compute-vm-2-2-30-hdd-1751355561681:~/Netology/Terraform/OpenTofu$ tofu apply
+
+OpenTofu used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+OpenTofu will perform the following actions:
+
+  # docker_container.mysql will be created
+  + resource "docker_container" "mysql" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (sensitive value)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + must_run                                    = true
+      + name                                        = (sensitive value)
+      + network_data                                = (known after apply)
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + ports {
+          + external = 3306
+          + internal = 3306
+          + ip       = "127.0.0.1"
+          + protocol = "tcp"
+        }
+    }
+
+  # docker_container.nginx will be created
+  + resource "docker_container" "nginx" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + must_run                                    = true
+      + name                                        = "hello_world"
+      + network_data                                = (known after apply)
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + ports {
+          + external = 9090
+          + internal = 80
+          + ip       = "0.0.0.0"
+          + protocol = "tcp"
+        }
+    }
+
+  # docker_image.mysql will be created
+  + resource "docker_image" "mysql" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "mysql:8"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.nginx will be created
+  + resource "docker_image" "nginx" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "nginx:latest"
+      + repo_digest  = (known after apply)
+    }
+
+  # random_password.mysql_pass will be created
+  + resource "random_password" "mysql_pass" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 16
+      + lower       = true
+      + min_lower   = 1
+      + min_numeric = 1
+      + min_special = 0
+      + min_upper   = 1
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+  # random_password.mysql_root_pass will be created
+  + resource "random_password" "mysql_root_pass" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 16
+      + lower       = true
+      + min_lower   = 1
+      + min_numeric = 1
+      + min_special = 0
+      + min_upper   = 1
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+  # random_password.random_string will be created
+  + resource "random_password" "random_string" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 16
+      + lower       = true
+      + min_lower   = 1
+      + min_numeric = 1
+      + min_special = 0
+      + min_upper   = 1
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+Plan: 7 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  OpenTofu will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+docker_image.mysql: Creating...
+docker_image.nginx: Creating...
+docker_image.mysql: Creation complete after 0s [id=sha256:a0f6c7786c75739bd76a37b4b85e0f47b7c5d5a17a094bdd522412fb464d5cbemysql:8]
+docker_image.nginx: Creation complete after 0s [id=sha256:22bd1541745359072c06a72a23f4f6c52dbb685424e0d5b29008ae4eb2683698nginx:latest]
+docker_container.nginx: Creating...
+random_password.mysql_pass: Creating...
+random_password.mysql_root_pass: Creating...
+random_password.random_string: Creating...
+random_password.mysql_pass: Creation complete after 0s [id=none]
+random_password.mysql_root_pass: Creation complete after 0s [id=none]
+random_password.random_string: Creation complete after 0s [id=none]
+docker_container.mysql: Creating...
+docker_container.nginx: Creation complete after 0s [id=dbd77459e5480d5e05f1f8b0b5012066581b0b1cfaa2adcb3d18a6343cf782c3]
+docker_container.mysql: Creation complete after 1s [id=c59e524c4fd858a62b629cd3ccf4caf51f387e0cfb696fe43567b646bd5d6d11]
+
+Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+```
+
 ------
