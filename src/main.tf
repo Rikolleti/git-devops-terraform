@@ -9,10 +9,12 @@ terraform {
  Требуемая версия terraform */
 }
 
+/*
 provider "docker" {
   host     = "ssh://rikolleti@158.160.184.1"
   ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
 }
+*/
 
 #однострочный комментарий
 
