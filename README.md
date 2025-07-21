@@ -87,9 +87,33 @@ resource "docker_container" "nginx" {
 
 Как я понимаю, тут просто не нужно подтверждать изменения, что может быть чревато тем, что если конфиг maint.tf будет некорректным, то изменения будут сделаны без доп.подтверждения со стороны пользователя.
 
-9. Уничтожьте созданные ресурсы с помощью **terraform**. Убедитесь, что все ресурсы удалены. Приложите содержимое файла **terraform.tfstate**. 
+Вывод docker ps:
+```
+rikolleti@compute-vm-2-2-30-hdd-1751355561681:~/Netology/Terraform/src$ docker ps
+CONTAINER ID   IMAGE                                                COMMAND                  CREATED          STATUS          PORTS                  NAMES
+c7b1d0a304c9   22bd15417453                                         "/docker-entrypoint.…"   14 seconds ago   Up 14 seconds   0.0.0.0:9090->80/tcp   hello_world
+```
+
+9. Уничтожьте созданные ресурсы с помощью **terraform**. Убедитесь, что все ресурсы удалены. Приложите содержимое файла **terraform.tfstate**.:
+
+Вывод terraform.tfstate:
+```
+rikolleti@compute-vm-2-2-30-hdd-1751355561681:~/Netology/Terraform/src$ cat terraform.tfstate
+{
+  "version": 4,
+  "terraform_version": "1.12.2",
+  "serial": 23,
+  "lineage": "960cc1a4-3a7b-5361-40ce-958da6170e31",
+  "outputs": {},
+  "resources": [],
+  "check_results": null
+}
+```
+ 
 10. Объясните, почему при этом не был удалён docker-образ **nginx:latest**. Ответ **ОБЯЗАТЕЛЬНО НАЙДИТЕ В ПРЕДОСТАВЛЕННОМ КОДЕ**, а затем **ОБЯЗАТЕЛЬНО ПОДКРЕПИТЕ** строчкой из документации [**terraform провайдера docker**](https://docs.comcloud.xyz/providers/kreuzwerker/docker/latest/docs).  (ищите в классификаторе resource docker_image )
 
+Это произошло из-за строчки keep_locally = true, которая сохраняет образ локально.
+Из документации: "keep_locally (Boolean) If true, then the Docker image won't be deleted on destroy operation.If this is false, it will delete the image from the docker local storage on destroy operation"
 
 ------
 
@@ -100,10 +124,17 @@ resource "docker_container" "nginx" {
 
 ### Задание 2*
 
-1. Создайте в облаке ВМ. Сделайте это через web-консоль, чтобы не слить по незнанию токен от облака в github(это тема следующей лекции). Если хотите - попробуйте сделать это через terraform, прочитав документацию yandex cloud. Используйте файл ```personal.auto.tfvars``` и гитигнор или иной, безопасный способ передачи токена!
-2. Подключитесь к ВМ по ssh и установите стек docker.
-3. Найдите в документации docker provider способ настроить подключение terraform на вашей рабочей станции к remote docker context вашей ВМ через ssh.
-4. Используя terraform и  remote docker context, скачайте и запустите на вашей ВМ контейнер ```mysql:8``` на порту ```127.0.0.1:3306```, передайте ENV-переменные. Сгенерируйте разные пароли через random_password и передайте их в контейнер, используя интерполяцию из примера с nginx.(```name  = "example_${random_password.random_string.result}"```  , двойные кавычки и фигурные скобки обязательны!) 
+1. Создайте в облаке ВМ. Сделайте это через web-консоль, чтобы не слить по незнанию токен от облака в github(это тема следующей лекции). Если хотите - попробуйте сделать это через terraform, прочитав документацию yandex cloud. Используйте файл ```personal.auto.tfvars``` и гитигнор или иной, безопасный способ передачи токена! - Создал через web-консоль.
+2. Подключитесь к ВМ по ssh и установите стек docker. - Готово
+3. Найдите в документации docker provider способ настроить подключение terraform на вашей рабочей станции к remote docker context вашей ВМ через ssh:
+
+provider "docker" {
+  host     = "ssh://rikolleti@158.160.184.1:22"
+  ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
+}
+(https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs)
+  
+5. Используя terraform и  remote docker context, скачайте и запустите на вашей ВМ контейнер ```mysql:8``` на порту ```127.0.0.1:3306```, передайте ENV-переменные. Сгенерируйте разные пароли через random_password и передайте их в контейнер, используя интерполяцию из примера с nginx.(```name  = "example_${random_password.random_string.result}"```  , двойные кавычки и фигурные скобки обязательны!) 
 ```
     environment:
       - "MYSQL_ROOT_PASSWORD=${...}"
@@ -112,29 +143,31 @@ resource "docker_container" "nginx" {
       - "MYSQL_PASSWORD=${...}"
       - MYSQL_ROOT_HOST="%"
 ```
+Готово:
 
-6. Зайдите на вашу ВМ , подключитесь к контейнеру и проверьте наличие секретных env-переменных с помощью команды ```env```. Запишите ваш финальный код в репозиторий.
+```
+resource "docker_container" "mysql" {
+  image = docker_image.mysql.image_id
+  name = "example_${random_password.random_string.result}"
+  env = [
+    "MYSQL_ROOT_PASSWORD=${random_password.mysql_root_pass.result}",
+    "MYSQL_DATABASE=wordpress",
+    "MYSQL_USER=wordpress",
+    "MYSQL_PASSWORD=${random_password.mysql_pass.result}",
+    "MYSQL_ROOT_HOST=%"
+  ]
+
+  ports {
+    ip = "127.0.0.1"
+    internal = 3306
+    external = 3306
+ }
+}
+```
+
+6. Зайдите на вашу ВМ , подключитесь к контейнеру и проверьте наличие секретных env-переменных с помощью команды ```env```. Запишите ваш финальный код в репозиторий. - Готово
 
 ### Задание 3*
 1. Установите [opentofu](https://opentofu.org/)(fork terraform с лицензией Mozilla Public License, version 2.0) любой версии
 2. Попробуйте выполнить тот же код с помощью ```tofu apply```, а не terraform apply.
 ------
-
-### Правила приёма работы
-
-Домашняя работа оформляется в отдельном GitHub-репозитории в файле README.md.   
-Выполненное домашнее задание пришлите ссылкой на .md-файл в вашем репозитории.
-
-### Критерии оценки
-
-Зачёт ставится, если:
-
-* выполнены все задания,
-* ответы даны в развёрнутой форме,
-* приложены соответствующие скриншоты и файлы проекта,
-* в выполненных заданиях нет противоречий и нарушения логики.
-
-На доработку работу отправят, если:
-
-* задание выполнено частично или не выполнено вообще,
-* в логике выполнения заданий есть противоречия и существенные недостатки. 
